@@ -23,9 +23,13 @@ class Notify(Resource):
         return "Processed"
 
     def readDB(self):
-        url = "http://maps.googleapis.com/maps/api/geocode/json?address=googleplex&sensor=false"
-        r = requests.get(url)
-        return r
+        # url = "http://maps.googleapis.com/maps/api/geocode/json?address=googleplex&sensor=false"
+        # r = requests.get(url)
+        cursor = db.cursor()
+        sql = "select * from account"
+        print(cursor.execute(sql))
+        rows = cursor.fetchall()
+        return rows #modify this
     
     def createPallets(self,orders):
         #intelligent logic goes here
