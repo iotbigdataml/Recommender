@@ -22,12 +22,28 @@ class Notify(Resource):
         cursor = db.cursor()
         cursor.execute(selectProdIDQty)
         result_set = cursor.fetchall()
+        a = 2
+        b = 2
+        # updateInventory = "UPDATE products SET qtyInStock = qtyInStock - " +  str(a) +") WHERE productID = " + str(b)
 
+        curs = db.cursor()
+        app.logger.info("****************Order id****************::" + str(orderID))
         for row in result_set:
-            curs = db.cursor()
-            print("%s, %s" % (row["productID"], row["qtyOrdered"]))
-            updateInventory = "UPDATE products SET qtyInStock = qtyInStock - "+  row["qtyOrdered"] +" WHERE productID = " + row["productID"]
+          
+        #     app.logger.info("***********")
+        #     app.logger.info("row0::")
+        #     app.logger.info(row[0])
+
+        #     app.logger.info("row1::")
+        #     app.logger.info(row[1])
+        #     app.logger.info("***********")
+        #     app.logger.info(row)
+            updateInventory = "UPDATE products SET qtyInStock = (qtyInStock - " +  str(row[1]) + ") WHERE productID = " + str(row[0])
+            # updateInventory = "UPDATE products SET qtyInStock = (qtyInStock - %d) WHERE productID = %d".format(int(row[1]), int(row[0]))
             curs.execute(updateInventory)
+            db.commit()
+        #     app.logger.info(updateInventory)
+        #     app.logger.info(curs.execute(updateInventory))
 
         return "Updated"
 
