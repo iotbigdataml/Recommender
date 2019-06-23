@@ -2,65 +2,45 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from json import dumps, loads, load
-import http.client, urllib, urllib.request, urllib.parse, urllib.error, base64, re, json, pymysql
-import requests
+import http.client, urllib, urllib.request, urllib.parse, urllib.error, base64, re, json, pymysql, requests
 
 app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
 app.debug = True
 
-db = pymysql.connect(host="ediss.cj2pus6demaz.us-east-1.rds.amazonaws.com", user="root", passwd="admin123", db="login")
+
+db = pymysql.connect(host="localhost", user="root", passwd="password", db="iot")
 
 class Notify(Resource):
     def get(self):
-        self.createPallets(self.readDB())
-        #strjson = '[{\"orderid\":1,\"item\":\"Blue\",\"inventory\":9},{\"orderid\":2,\"item\":\"Red\",\"inventory\":3},{\"orderid\":3,\"item\":\"Yellow\",\"inventory\":4}]'
-        #return strjson
-        return "noted"
+        return "NOT IMPLEMENTED!"
     
     def post(self):
-        return "Processed"
-
-    def readDB(self):
-        # url = "http://maps.googleapis.com/maps/api/geocode/json?address=googleplex&sensor=false"
-        # r = requests.get(url)
+        orderID = request.get_json()["orderID"]
+        selectProdIDQty = "SELECT productID, qtyOrdered FROM orderProducts WHERE orderID =" + str(orderID)
         cursor = db.cursor()
-        sql = "select * from account"
-        print(cursor.execute(sql))
-        rows = cursor.fetchall()
-        return rows #modify this
-    
-    def createPallets(self,orders):
-        #intelligent logic goes here
-        #for(order:orders)
-            #insertQuery = ""
-            #cursor = db.cursor()
-            #result  = cursor.execute(insertQuery)
-            #db.commit()
-        return "pallets"
+        cursor.execute(selectProdIDQty)
+        result_set = cursor.fetchall()
+
+        for row in result_set:
+            curs = db.cursor()
+            print("%s, %s" % (row["productID"], row["qtyOrdered"]))
+            updateInventory = "UPDATE products SET qtyInStock = qtyInStock - "+  row["qtyOrdered"] +" WHERE productID = " + row["productID"]
+            curs.execute(updateInventory)
+
+        return "Updated"
 
 class GetPallet(Resource):
     def get(self):
         return getPallet()
     
     def post(self):      
-        return "Processed"
+        return "NOT IMPLEMENTED!"
 
 def getPallet():
-        print(db)
-        cursor = db.cursor()
-        sql = "select * from account"
-        print(cursor.execute(sql))
-        rows = cursor.fetchall()
-        print(type(rows))
-        # Convert query to row arrays
-        rowarray_list = []
-        # for row in rows:
-        #     rowarray_list.append(row)
-        orderid = 123 #get from rows
-        markread(orderid)
-        return json.dumps(rows)
+        #implement if needed
+        return "NOT IMPLEMENTED!"
 
 def markread(orderid):
         print(orderid)
