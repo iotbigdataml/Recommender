@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from json import dumps, loads, load
-import http.client, urllib, urllib.request, urllib.parse, urllib.error, base64, re, json, pymysql, urllib2,requests
+import http.client, urllib, urllib.request, urllib.parse, urllib.error, base64, re, json, pymysql, requests
 
 app = Flask(__name__)
 api = Api(app)
@@ -12,7 +12,6 @@ app.debug = True
 fulfillmentServiceurl = ""
 class Notify(Resource):
     def get(self):
-        json.load(urllib2.urlopen(fulfillmentServiceurl))
         self.createPallets(self.readDB())
         return "noted"
     
@@ -20,7 +19,7 @@ class Notify(Resource):
         return "Processed"
 
     def readDB(self):
-        
+        rows = ""
         return rows #modify this
     
     def createPallets(self,orders):
