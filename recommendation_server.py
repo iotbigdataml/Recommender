@@ -9,34 +9,38 @@ api = Api(app)
 cors = CORS(app)
 app.debug = True
 
-fulfillmentServiceurl = ""
+
+db = pymysql.connect(host="localhost", user="root", passwd="password", db="iot")
+
 class Notify(Resource):
     def get(self):
-        self.createPallets(self.readDB())
-        return "noted"
+        return "NOT IMPLEMENTED!"
     
     def post(self):
-        return "Processed"
+        orderID = request.get_json()["orderID"]
+        selectProdIDQty = "SELECT productID, qtyOrdered FROM orderProducts WHERE orderID =" + str(orderID)
+        cursor = db.cursor()
+        cursor.execute(selectProdIDQty)
+        result_set = cursor.fetchall()
 
-    def readDB(self):
-        rows = ""
-        return rows #modify this
-    
-    def createPallets(self,orders):
-        #intelligent logic goes here
-        # call insert API from Orer fulfillment
-        return "pallets"
+        for row in result_set:
+            curs = db.cursor()
+            print("%s, %s" % (row["productID"], row["qtyOrdered"]))
+            updateInventory = "UPDATE products SET qtyInStock = qtyInStock - "+  row["qtyOrdered"] +" WHERE productID = " + row["productID"]
+            curs.execute(updateInventory)
+
+        return "Updated"
 
 class GetPallet(Resource):
     def get(self):
         return getPallet()
     
     def post(self):      
-        return "Processed"
+        return "NOT IMPLEMENTED!"
 
 def getPallet():
         #implement if needed
-        return "NOT IMPLEMENTED"
+        return "NOT IMPLEMENTED!"
 
 def markread(orderid):
         print(orderid)
