@@ -10,40 +10,29 @@ cors = CORS(app)
 app.debug = True
 
 
-db = pymysql.connect(host="localhost", user="root", passwd="password", db="iot")
+#db = pymysql.connect(host="localhost", user="root", passwd="password", db="iot")
 
 class Notify(Resource):
     def get(self):
         return "NOT IMPLEMENTED!"
     
     def post(self):
+        db = pymysql.connect(host="localhost", user="root", passwd="password", db="iot")
         orderID = request.get_json()["orderID"]
         selectProdIDQty = "SELECT productID, qtyOrdered FROM orderProducts WHERE orderID =" + str(orderID)
         cursor = db.cursor()
         cursor.execute(selectProdIDQty)
         result_set = cursor.fetchall()
-        a = 2
-        b = 2
-        # updateInventory = "UPDATE products SET qtyInStock = qtyInStock - " +  str(a) +") WHERE productID = " + str(b)
 
         curs = db.cursor()
         app.logger.info("****************Order id****************::" + str(orderID))
         for row in result_set:
-          
-        #     app.logger.info("***********")
-        #     app.logger.info("row0::")
-        #     app.logger.info(row[0])
-
-        #     app.logger.info("row1::")
-        #     app.logger.info(row[1])
-        #     app.logger.info("***********")
-        #     app.logger.info(row)
             updateInventory = "UPDATE products SET qtyInStock = (qtyInStock - " +  str(row[1]) + ") WHERE productID = " + str(row[0])
-            # updateInventory = "UPDATE products SET qtyInStock = (qtyInStock - %d) WHERE productID = %d".format(int(row[1]), int(row[0]))
+            app.logger.info(updateInventory)
             curs.execute(updateInventory)
-            db.commit()
-        #     app.logger.info(updateInventory)
-        #     app.logger.info(curs.execute(updateInventory))
+           
+        db.commit()
+        db.close()
 
         return "Updated"
 
@@ -66,3 +55,4 @@ api.add_resource(GetPallet, '/getpallet') # Route_2
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5006, threaded=True)
+
